@@ -88,8 +88,31 @@
   .item a:hover .orb{ transform:translateY(-3px); }
   .item a:focus-visible .orb{ outline:2px solid var(--primary-blue); outline-offset:2px; }
 
-  .addr{ margin-top:20px; font-size:12.5px; line-height:1.7; color:var(--ink-tertiary); }
-  .addr p{ margin:0; }
+  .subcard{ margin-top:20px; text-align:left; background:var(--bg-surface-muted); border:1px solid var(--bg-panel); border-radius:16px; padding:16px; }
+  .subcard-head{ display:flex; align-items:center; gap:7px; margin-bottom:12px; }
+  .subcard-head .bar{ width:4px; height:14px; border-radius:2px; background:var(--primary-blue); }
+  .subcard-head span{ font-size:12.5px; font-weight:700; color:var(--ink); }
+
+  .video-thumb{ position:relative; border-radius:12px; overflow:hidden; aspect-ratio:16/9; background:#000; }
+  .video-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .video-badge{ position:absolute; top:8px; left:8px; background:rgba(0,0,0,.75); color:#fff; font-size:9.5px; font-weight:700; padding:3px 7px; border-radius:6px; letter-spacing:.04em; }
+  .video-play{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .video-play svg{ width:46px; height:46px; filter:drop-shadow(0 6px 14px rgba(0,0,0,.45)); }
+  .video-title{ margin:12px 0 2px; font-size:14px; font-weight:700; color:var(--ink); line-height:1.4; }
+  .video-sub{ margin:0; font-size:11.5px; color:var(--ink-tertiary); }
+  .video-link{ display:flex; justify-content:flex-end; margin-top:8px; font-size:12px; font-weight:700; color:var(--primary-blue-deep); text-decoration:none; }
+
+  .loc-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:0; }
+  .loc-eyebrow{ font-size:10px; font-weight:700; letter-spacing:.07em; color:var(--primary-blue); }
+  .copy-btn{ font-size:11px; font-weight:700; color:var(--primary-blue-deep); background:var(--bg-surface); border:1px solid var(--bg-panel); border-radius:8px; padding:5px 9px; cursor:pointer; font-family:inherit; }
+  .copy-btn:active{ transform:scale(.96); }
+  .loc-addr{ margin:8px 0 14px; font-size:13px; color:var(--ink-secondary); line-height:1.6; }
+  .loc-addr b{ color:var(--ink); }
+  .map-row{ display:flex; gap:7px; }
+  .map-btn{ flex:1; text-align:center; padding:9px 4px; border-radius:10px; font-size:11px; font-weight:700; text-decoration:none; }
+  .map-btn.naver{ background:rgba(3,199,90,.12); color:#03A94A; }
+  .map-btn.kakao{ background:rgba(254,229,0,.35); color:#7A5B00; }
+  .map-btn.tmap{ background:rgba(228,50,42,.12); color:#E4322A; }
 
   .cta{
     display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:26px;
@@ -122,11 +145,37 @@
       <div class="quick">
         <div class="item"><a href="tel:01074709338"><div class="orb"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4c1-1 2-1 3 0l2 2c1 1 1 2-1 4l-1 1c1 2 2 3 4 4l1-1c2-2 3-2 4-1l2 2c1 1 1 2-1 3-3 3-8 2-12-2S3 7 6 4z" fill="#1F5FD9"/></svg></div><span class="lb">전화</span></a></div>
         <div class="item"><a href="sms:01074709338"><div class="orb"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4.2 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" stroke="#1F5FD9" stroke-width="1.8" fill="none" stroke-linejoin="round"/><circle cx="8" cy="10.5" r="1.1" fill="#1F5FD9"/><circle cx="12" cy="10.5" r="1.1" fill="#1F5FD9"/><circle cx="16" cy="10.5" r="1.1" fill="#1F5FD9"/></svg></div><span class="lb">문자</span></a></div>
+        <div class="item"><a href="https://hanmaumch.com/" target="_blank" rel="noopener"><div class="orb"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6 8 6" stroke="#1F5FD9" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M6 10v8a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-8" stroke="#1F5FD9" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg></div><span class="lb">홈페이지</span></a></div>
       </div>
 
-      <div class="addr">
-        <p>서울특별시 강동구 성안로 3길 127 한마음교회</p>
-        <p>T. 02-488-9351 &nbsp;F. 02-488-9350</p>
+      <div class="subcard">
+        <div class="subcard-head"><span class="bar"></span><span>설교 영상</span></div>
+        <a id="videoLink" href="https://youtu.be/nnzJBWB56to" target="_blank" rel="noopener" style="text-decoration:none">
+          <div class="video-thumb">
+            <img id="videoThumb" src="https://img.youtube.com/vi/nnzJBWB56to/hqdefault.jpg" alt="설교 영상 썸네일" loading="lazy">
+            <span class="video-badge">YOUTUBE</span>
+            <div class="video-play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="rgba(255,255,255,.92)"/><path d="M10 8.5l6 3.5-6 3.5z" fill="#1F5FD9"/></svg></div>
+          </div>
+          <p class="video-title" id="videoTitle">주일예배 설교: "집으로 돌아가라"</p>
+          <p class="video-sub" id="videoSub">유한구 목사 · 마가복음 5장 18-20절</p>
+          <span class="video-link">영상 시청하기 →</span>
+        </a>
+      </div>
+
+      <div class="subcard">
+        <div class="loc-head">
+          <span class="loc-eyebrow">LOCATION</span>
+          <button class="copy-btn" type="button" id="copyAddrBtn">주소 복사</button>
+        </div>
+        <p class="loc-addr">
+          <b>서울특별시 강동구 성안로 3길 127 한마음교회</b><br>
+          T. 02-488-9351 &nbsp;F. 02-488-9350
+        </p>
+        <div class="map-row">
+          <a class="map-btn naver" href="https://map.naver.com/p/search/서울특별시 강동구 성안로 3길 127 한마음교회" target="_blank" rel="noopener">네이버 지도</a>
+          <a class="map-btn kakao" href="https://map.kakao.com/link/search/서울특별시 강동구 성안로 3길 127 한마음교회" target="_blank" rel="noopener">카카오맵</a>
+          <a class="map-btn tmap" href="tmap://search?name=서울특별시 강동구 성안로 3길 127 한마음교회" rel="noopener">티맵 길찾기</a>
+        </div>
       </div>
 
       <button class="cta" type="button">＋ 연락처 저장하기</button>
@@ -136,6 +185,66 @@
 </div>
 
 <script>
+  const CHANNEL_ID = 'UC0ybLv4exTjqrjjqCxVifPQ'; // 한마음교회 유튜브 채널
+  const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+  const RSS2JSON_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
+  async function fetchLatestVideo(timeoutMs) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(RSS2JSON_URL, { signal: controller.signal });
+      const data = await res.json();
+      const latest = data.items && data.items[0];
+      if (!latest) throw new Error('no items from rss2json');
+      return latest;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  (async () => {
+    let latest;
+    try {
+      latest = await fetchLatestVideo(6000);
+    } catch (e1) {
+      try {
+        latest = await fetchLatestVideo(6000); // 일시적 오류 대비 1회 재시도
+      } catch (e2) {
+        console.warn('최신 설교 영상을 불러오지 못해 기본값을 표시합니다.', e2);
+        return;
+      }
+    }
+
+    const rawTitle = latest.title.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+    const quoted = rawTitle.match(/"([^"]+)"/);
+    const sermonTitle = quoted ? quoted[1] : rawTitle;
+
+    const parens = [...rawTitle.matchAll(/\(([^)]+)\)/g)].map(m => m[1]);
+    const passage = parens.find(p => /[장절]/.test(p)) || '';
+
+    const preacherMatch = rawTitle.match(/([가-힣]{2,10}\s*(?:담임)?목사)\s*$/);
+    const preacher = preacherMatch ? preacherMatch[1] : '';
+
+    document.getElementById('videoLink').href = latest.link;
+    document.getElementById('videoThumb').src = latest.thumbnail;
+    document.getElementById('videoTitle').textContent = `주일예배 설교: "${sermonTitle}"`;
+    document.getElementById('videoSub').textContent = [preacher, passage].filter(Boolean).join(' · ');
+  })();
+
+  const copyAddrBtn = document.getElementById('copyAddrBtn');
+  copyAddrBtn.addEventListener('click', async () => {
+    const address = '서울특별시 강동구 성안로 3길 127 한마음교회';
+    try {
+      await navigator.clipboard.writeText(address);
+      const original = copyAddrBtn.textContent;
+      copyAddrBtn.textContent = '복사됨';
+      setTimeout(() => { copyAddrBtn.textContent = original; }, 1500);
+    } catch (error) {
+      console.warn('주소 복사에 실패했습니다.', error);
+    }
+  });
+
   const contactButton = document.querySelector('.cta');
   const contactVCard = [
     'BEGIN:VCARD',
