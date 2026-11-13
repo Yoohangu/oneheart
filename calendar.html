@@ -203,7 +203,7 @@
 <!-- 편집 -->
 <dialog id="editDlg">
   <form method="dialog" id="editForm">
-    <div class="dlg-h"><h3 id="editTitle">일정 추가</h3><button class="btn icon" value="cancel" aria-label="닫기">✕</button></div>
+    <div class="dlg-h"><h3 id="editTitle">일정 추가</h3><button class="btn icon" value="cancel" formnovalidate aria-label="닫기">✕</button></div>
     <div class="dlg-b">
       <label class="fld"><span>제목</span><input name="title" required placeholder="예: 주일 설교 — 요한복음 15:1-11"></label>
       <label class="fld"><span>캘린더</span><select name="cal"></select></label>
@@ -249,7 +249,7 @@
     <div class="dlg-f">
       <button class="btn danger" type="button" id="delBtn" hidden>삭제</button>
       <div class="spacer"></div>
-      <button class="btn" value="cancel">취소</button>
+      <button class="btn" value="cancel" formnovalidate>취소</button>
       <button class="btn primary" type="button" id="saveBtn">저장</button>
     </div>
   </form>
@@ -665,6 +665,8 @@
   $('#next').onclick = () => { cursor.setMonth(cursor.getMonth()+1); render(); loadEvents(); };
   $('#todayBtn').onclick = () => { cursor = new Date(); cursor.setDate(1); render(); loadEvents(); };
   $('#refresh').onclick = loadEvents;
+  // 대화상자 바깥(어두운 배경)을 누르면 닫기
+  [editDlg, viewDlg].forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
   document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { view = b.dataset.view; ls.set(K.view, view); render(); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && token() && calendars.length) loadEvents(); });
 
