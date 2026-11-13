@@ -118,6 +118,21 @@
   .detail .memo{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--muted);border-radius:10px;padding:10px 12px;color:var(--ink2)}
   .tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;color:#fff;background:var(--c)}
 
+  .sermon-box{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--muted)}
+  .sermon-box .fld input,.sermon-box .fld textarea,.sermon-box .fld select{background:var(--surface)}
+  .sermon-card{background:var(--muted);border-left:4px solid var(--blue);border-radius:10px;padding:10px 12px;display:grid;gap:5px;font-size:14px;color:var(--ink2);overflow-wrap:anywhere}
+  .sermon-card b{color:var(--ink);margin-right:6px}
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;color:#fff}
+  .sm-card{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;line-height:1.55}
+  .sm-card:hover{border-color:var(--blue)}
+  .sm-card .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+  .sm-card .dt{font-weight:800;font-size:14px}
+  .sm-card .st{font-weight:700;font-size:15px}
+  .sm-card .ln{font-size:13px;color:var(--ink2)}
+  .tpl-row{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .tpl-row .nm{display:flex;gap:8px;align-items:center}
+  .tpl-row input[type=text]{flex:1;min-width:0;border:1px solid var(--line);background:var(--muted);border-radius:9px;padding:8px 10px;font-size:14.5px}
+  .tpl-row input[type=time]{width:100%;border:1px solid var(--line);background:var(--muted);border-radius:9px;padding:8px 10px;font-size:14.5px}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:13.5px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;max-width:calc(100vw - 32px);text-align:center}
   .toast.show{opacity:1}
 
@@ -191,6 +206,7 @@
       <div class="seg">
         <button data-view="month" class="on">월</button>
         <button data-view="agenda">목록</button>
+        <button data-view="sermon">📖 설교</button>
       </div>
     </div>
 
@@ -205,7 +221,19 @@
   <form method="dialog" id="editForm">
     <div class="dlg-h"><h3 id="editTitle">일정 추가</h3><button class="btn icon" value="cancel" formnovalidate aria-label="닫기">✕</button></div>
     <div class="dlg-b">
-      <label class="fld"><span>제목</span><input name="title" required placeholder="예: 주일 설교 — 요한복음 15:1-11"></label>
+      <label class="fld"><span>제목</span><input name="title" required placeholder="예: 주일예배 설교"></label>
+      <label class="chk"><input type="checkbox" name="isSermon"> 📖 설교 일정 (본문·3대지 정리)</label>
+      <div class="sermon-box" id="sermonBox" hidden>
+        <label class="fld"><span>설교 제목</span><input name="sTitle" autocomplete="off"></label>
+        <label class="fld"><span>본문</span><input name="sText" placeholder="예: 요한복음 15:1-11" autocomplete="off"></label>
+        <label class="fld"><span>1대지</span><input name="sP1" autocomplete="off"></label>
+        <label class="fld"><span>2대지</span><input name="sP2" autocomplete="off"></label>
+        <label class="fld"><span>3대지</span><input name="sP3" autocomplete="off"></label>
+        <label class="fld"><span>적용 · 결론</span><textarea name="sApp"></textarea></label>
+        <label class="fld"><span>준비 상태</span>
+          <select name="sStatus"><option value="">선택 안 함</option><option>본문 연구</option><option>원고 작성</option><option>원고 완성</option><option>설교 완료</option></select>
+        </label>
+      </div>
       <label class="fld"><span>캘린더</span><select name="cal"></select></label>
       <label class="fld" id="scopeRow" hidden><span>반복 일정 적용 범위</span>
         <select name="scope"><option value="one">이 일정만</option><option value="all">반복 일정 전체</option></select>
@@ -260,10 +288,29 @@
   <div class="dlg-h"><h3 id="vTitle"></h3><button class="btn icon" id="vClose" aria-label="닫기">✕</button></div>
   <div class="detail" id="vBody"></div>
   <div class="dlg-f">
+    <button class="btn" id="vCopy" hidden>📋 설교 개요 복사</button>
     <a class="btn" id="vGoogle" target="_blank" rel="noopener">구글 캘린더에서 열기</a>
     <div class="spacer"></div>
     <button class="btn primary" id="vEdit">수정</button>
   </div>
+</dialog>
+
+<!-- 정기 설교 일정 -->
+<dialog id="tplDlg">
+  <form method="dialog">
+    <div class="dlg-h"><h3>정기 설교 일정 만들기</h3><button class="btn icon" value="cancel" formnovalidate aria-label="닫기">✕</button></div>
+    <div class="dlg-b">
+      <p class="hint" style="margin:0;font-size:12.5px;color:var(--ink3);line-height:1.6">매주 반복되는 설교 일정을 한 번에 만듭니다. <b>예배 이름과 시간은 실제에 맞게 고쳐 주세요.</b> 만들어진 뒤 각 주의 일정을 눌러 설교 제목·본문·3대지를 적으시면 됩니다.</p>
+      <div id="tplRows"></div>
+      <label class="fld"><span>캘린더</span><select id="tplCal"></select></label>
+      <label class="fld"><span>반복 종료일 (선택)</span><input type="date" id="tplUntil"></label>
+    </div>
+    <div class="dlg-f">
+      <div class="spacer"></div>
+      <button class="btn" value="cancel" formnovalidate>취소</button>
+      <button class="btn primary" type="button" id="tplSave">만들기</button>
+    </div>
+  </form>
 </dialog>
 
 <div class="toast" id="toast"></div>
@@ -360,16 +407,68 @@
   const writable = c => c && (c.accessRole === 'owner' || c.accessRole === 'writer');
   const calName = c => c.summaryOverride || c.summary || c.id;
 
+  // ---------- 설교 정보 (구글 일정의 비공개 속성 + 설명란에 함께 저장) ----------
+  const SK = { title:'oh_title', text:'oh_text', p1:'oh_p1', p2:'oh_p2', p3:'oh_p3', app:'oh_app', status:'oh_status' };
+  const SEP = '\n――――\n', HEAD = '[설교 준비]';
+  const STATUS_COLOR = { '본문 연구':'#E08A16', '원고 작성':'#7A4CE0', '원고 완성':'#2F73F2', '설교 완료':'#16A06B' };
+  const readSermon = sp => { const o = {}; for (const k in SK) o[k] = sp[SK[k]] || ''; return o; };
+  const stripBlock = d => { if (!d.startsWith(HEAD)) return d; const i = d.indexOf(SEP); return i >= 0 ? d.slice(i + SEP.length) : ''; };
+  function composeDesc(S, memo){
+    if (!S) return memo;
+    const L = [];
+    if (S.title) L.push('제목: ' + S.title);
+    if (S.text) L.push('본문: ' + S.text);
+    [1,2,3].forEach(i => { if (S['p'+i]) L.push(`${i}대지: ${S['p'+i]}`); });
+    if (S.app) L.push('적용: ' + S.app);
+    if (S.status) L.push('상태: ' + S.status);
+    if (!L.length) return memo;
+    return HEAD + '\n' + L.join('\n') + (memo ? SEP + memo : '');
+  }
+  function sermonProps(on, S, create){
+    const o = {};
+    if (!on){ o.oh_sermon = null; for (const k in SK) o[SK[k]] = null; }
+    else { o.oh_sermon = '1'; for (const k in SK) o[SK[k]] = S[k] ? S[k].slice(0, 900) : null; }
+    if (create) for (const k in o) if (o[k] === null) delete o[k];
+    return o;
+  }
+  function sermonCardHtml(e){
+    if (!e.sermon) return '';
+    const s = e.sp, r = [];
+    if (s.title) r.push(`<div><b>설교 제목</b>${esc(s.title)}</div>`);
+    if (s.text) r.push(`<div><b>본문</b>${esc(s.text)}</div>`);
+    [1,2,3].forEach(i => { if (s['p'+i]) r.push(`<div><b>${i}대지</b>${esc(s['p'+i])}</div>`); });
+    if (s.app) r.push(`<div><b>적용</b>${esc(s.app)}</div>`);
+    if (s.status) r.push(`<div><span class="badge" style="background:${STATUS_COLOR[s.status]||'#5C6A93'}">${esc(s.status)}</span></div>`);
+    if (!r.length) r.push('<div>📖 설교 일정입니다. ‘수정’에서 설교 제목·본문·3대지를 적어 두세요.</div>');
+    return `<div class="sermon-card">${r.join('')}</div>`;
+  }
+  function sermonText(e){
+    const s = e.sp, L = [`${e.sd} ${e.title}`];
+    if (s.title) L.push('제목: ' + s.title);
+    if (s.text) L.push('본문: ' + s.text);
+    [1,2,3].forEach(i => { if (s['p'+i]) L.push(`${i}대지: ${s['p'+i]}`); });
+    if (s.app) L.push('적용: ' + s.app);
+    return L.join('\n');
+  }
+
+  // 기기의 시간대와 상관없이 항상 한국 시간으로 표시
+  const inTZ = d => {
+    const f = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23' })
+      .formatToParts(d).reduce((o,x) => (o[x.type] = x.value, o), {});
+    return [`${f.year}-${f.month}-${f.day}`, `${f.hour}:${f.minute}`];
+  };
+
   function normalize(ev, cal){
     let allDay = !!ev.start?.date, sd, ed, st = '', et = '';
     if (allDay){ sd = ev.start.date; ed = addDays(ev.end?.date || addDays(sd,1), -1); if (ed < sd) ed = sd; }
     else {
       const s = new Date(ev.start.dateTime), e = new Date(ev.end?.dateTime || ev.start.dateTime);
-      sd = ymd(s); st = hm(s); ed = ymd(e); et = hm(e);
+      [sd, st] = inTZ(s); [ed, et] = inTZ(e);
       if (ed > sd && et === '00:00') ed = addDays(ed, -1);
     }
+    const sp = ev.extendedProperties?.private || {};
     return { id: ev.id, calId: cal.id, title: ev.summary || '(제목 없음)', allDay, sd, ed, st, et,
-             location: ev.location || '', memo: plain(ev.description), recurringEventId: ev.recurringEventId || '',
+             location: ev.location || '', memo: stripBlock(plain(ev.description)), sermon: sp.oh_sermon === '1', sp: readSermon(sp), recurringEventId: ev.recurringEventId || '',
              htmlLink: ev.htmlLink || '', reminders: ev.reminders, color: cal.backgroundColor || '#2F73F2', writable: writable(cal) };
   }
 
@@ -421,7 +520,7 @@
   function render(){
     document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.view === view));
     $('#monthLabel').textContent = `${cursor.getFullYear()}년 ${cursor.getMonth()+1}월`;
-    view === 'month' ? renderMonth() : renderAgenda();
+    view === 'month' ? renderMonth() : view === 'sermon' ? renderSermon() : renderAgenda();
   }
   function renderMonth(){
     const { start, cells } = gridRange(), month = cursor.getMonth();
@@ -433,7 +532,7 @@
       h += `<div class="${cls}" data-date="${ds}"><div class="num">${d.getDate()}</div>`;
       evs.slice(0,max).forEach(e => {
         const solid = e.allDay || e.sd !== e.ed;
-        h += `<button class="ev ${solid?'allday':''}" style="--c:${esc(e.color)}" data-k="${items.indexOf(e)}" data-date="${ds}" title="${esc(e.title)}">${solid?'':`<b>${e.st}</b> `}${esc(e.title)}</button>`;
+        h += `<button class="ev ${solid?'allday':''}" style="--c:${esc(e.color)}" data-k="${items.indexOf(e)}" data-date="${ds}" title="${esc(e.title)}">${solid?'':`<b>${e.st}</b> `}${e.sermon?'📖 ':''}${esc(e.title)}</button>`;
       });
       if (evs.length>max) h += `<div class="more">+${evs.length-max}개</div>`;
       h += '</div>';
@@ -448,14 +547,31 @@
       if (!evs.length) continue; any = true;
       h += `<div class="ag-day"><div class="ag-date ${ds===todayStr?'today':''}"><div class="d">${i}</div><div class="w">${DOW[parseYmd(ds).getDay()]}요일</div></div><div class="ag-list">`;
       evs.forEach(e => {
-        h += `<button class="ag-ev" style="--c:${esc(e.color)}" data-k="${items.indexOf(e)}" data-date="${ds}"><div class="t">${timeLabel(e, ds)}</div><div><div class="s">${esc(e.title)}</div>${e.location?`<div class="l">📍 ${esc(e.location)}</div>`:''}</div></button>`;
+        h += `<button class="ag-ev" style="--c:${esc(e.color)}" data-k="${items.indexOf(e)}" data-date="${ds}"><div class="t">${timeLabel(e, ds)}</div><div><div class="s">${e.sermon?'📖 ':''}${esc(e.title)}</div>${e.sermon&&e.sp.text?`<div class="l">📖 ${esc(e.sp.text)}${e.sp.title?' · '+esc(e.sp.title):''}</div>`:''}${e.location?`<div class="l">📍 ${esc(e.location)}</div>`:''}</div></button>`;
       });
       h += '</div></div>';
     }
     if (!any) h += '<div class="empty">이 달에는 일정이 없습니다.<br>‘+ 일정 추가’로 등록하면 구글 캘린더에 바로 저장됩니다.</div>';
     $('#view').innerHTML = h + '</div>';
   }
+  function renderSermon(){
+    const y = cursor.getFullYear(), m = cursor.getMonth(), pre = `${y}-${pad(m+1)}`;
+    const list = items.filter(e => e.sermon && e.sd.startsWith(pre)).sort((a,b) => a.sd.localeCompare(b.sd) || a.st.localeCompare(b.st));
+    let h = `<div class="pad"><div class="row" style="justify-content:space-between;margin-bottom:12px"><b>${m+1}월 설교 ${list.length}건</b><button class="btn" id="tplBtn">+ 정기 설교 일정 만들기</button></div>`;
+    if (!list.length) h += '<div class="empty">이 달에 설교 일정이 없습니다.<br>‘+ 정기 설교 일정 만들기’로 주일·수요 예배를 한 번에 만들거나,<br>일정을 추가할 때 <b>📖 설교 일정</b>을 체크하세요.</div>';
+    list.forEach(e => {
+      const d = parseYmd(e.sd), s = e.sp;
+      h += `<button class="sm-card" data-k="${items.indexOf(e)}" data-date="${e.sd}"><div class="top"><span class="dt">${d.getMonth()+1}/${d.getDate()} (${DOW[d.getDay()]})</span><span class="ln">${esc(e.title)}${e.allDay?'':' · '+e.st}</span>${s.status?`<span class="badge" style="background:${STATUS_COLOR[s.status]||'#5C6A93'}">${esc(s.status)}</span>`:''}</div>`
+        + (s.title ? `<div class="st">${esc(s.title)}</div>` : '<div class="ln" style="color:var(--ink3)">설교 제목을 아직 적지 않았습니다</div>')
+        + (s.text ? `<div class="ln">📖 ${esc(s.text)}</div>` : '')
+        + [1,2,3].filter(i => s['p'+i]).map(i => `<div class="ln">${i}. ${esc(s['p'+i])}</div>`).join('')
+        + '</button>';
+    });
+    $('#view').innerHTML = h + '</div>';
+  }
+
   $('#view').addEventListener('click', ev => {
+    if (ev.target.closest('#tplBtn')) return openTpl();
     const btn = ev.target.closest('[data-k]');
     if (btn){ openDetail(items[+btn.dataset.k], btn.dataset.date); return; }
     const cell = ev.target.closest('.day');
@@ -475,13 +591,20 @@
       <div class="meta"><span>🗓</span><span>${when}</span></div>
       ${e.recurringEventId?'<div class="meta"><span>🔁</span><span>반복 일정</span></div>':''}
       ${e.location?`<div class="meta"><span>📍</span><span>${esc(e.location)}</span></div>`:''}
+      ${sermonCardHtml(e)}
       ${e.memo?`<div class="memo">${esc(e.memo)}</div>`:''}
       ${e.writable?'':'<div class="meta"><span>🔒</span><span>읽기 전용 캘린더의 일정입니다.</span></div>'}`;
     $('#vGoogle').hidden = !e.htmlLink; $('#vGoogle').href = e.htmlLink || '#';
     $('#vEdit').hidden = !e.writable;
+    $('#vCopy').hidden = !e.sermon;
     viewDlg.showModal();
   }
   $('#vClose').onclick = () => viewDlg.close();
+  $('#vCopy').onclick = async () => {
+    const t = sermonText(viewing);
+    try { await navigator.clipboard.writeText(t); toast('설교 개요를 복사했습니다.'); }
+    catch(e){ prompt('아래 내용을 복사하세요', t); }
+  };
   $('#vEdit').onclick = () => { viewDlg.close(); openEdit(viewing); };
 
   // ---------- 편집 ----------
@@ -493,8 +616,10 @@
     $('#repeatRow').hidden = recurring;
     const all = recurring && form.scope.value === 'all';
     form.date.disabled = form.dateEnd.disabled = all;
+    form.isSermon.disabled = all;
+    $('#sermonBox').hidden = !form.isSermon.checked || all;
   };
-  form.allDay.onchange = syncRows; form.scope.onchange = syncRows;
+  form.allDay.onchange = syncRows; form.scope.onchange = syncRows; form.isSermon.onchange = syncRows;
   form.date.onchange = () => { if (form.dateEnd.value < form.date.value) form.dateEnd.value = form.date.value; };
   form.start.onchange = () => {
     if (form.dateEnd.value === form.date.value && form.end.value <= form.start.value){
@@ -521,6 +646,10 @@
     form.end.value = e?.et || '11:00';
     form.location.value = e?.location || '';
     form.memo.value = e?.memo || '';
+    form.isSermon.checked = e ? !!e.sermon : view === 'sermon';
+    form.sTitle.value = e?.sp?.title || ''; form.sText.value = e?.sp?.text || '';
+    form.sP1.value = e?.sp?.p1 || ''; form.sP2.value = e?.sp?.p2 || ''; form.sP3.value = e?.sp?.p3 || '';
+    form.sApp.value = e?.sp?.app || ''; form.sStatus.value = e?.sp?.status || '';
     form.repeat.value = 'none'; form.until.value = ''; form.scope.value = 'one';
     const r = e?.reminders;
     form.alarm.value = !e || !r || r.useDefault ? 'default' : (r.overrides?.length ? String(r.overrides[0].minutes) : '-1');
@@ -553,6 +682,13 @@
     const body = { summary: f.title, location: form.location.value.trim(), description: form.memo.value };
     const a = form.alarm.value;
     body.reminders = a === 'default' ? { useDefault:true } : { useDefault:false, overrides: a === '-1' ? [] : [{ method:'popup', minutes:Number(a) }] };
+    if (!(editing?.recurringEventId && form.scope.value === 'all')){
+      const on = form.isSermon.checked;
+      const S = { title: form.sTitle.value.trim(), text: form.sText.value.trim(), p1: form.sP1.value.trim(), p2: form.sP2.value.trim(),
+                  p3: form.sP3.value.trim(), app: form.sApp.value.trim(), status: form.sStatus.value };
+      if (on || editing?.sermon) body.extendedProperties = { private: sermonProps(on, S, !editing) };
+      body.description = composeDesc(on ? S : null, form.memo.value);
+    }
 
     $('#saveBtn').disabled = true;
     try {
@@ -588,6 +724,41 @@
       await api(evPath(e.calId, all ? e.recurringEventId : e.id), { method:'DELETE' });
       editDlg.close(); toast('삭제했습니다.'); await loadEvents();
     } catch(err){ toast('삭제하지 못했습니다: ' + err.message); }
+  };
+
+  // ---------- 정기 설교 일정 ----------
+  const tplDlg = $('#tplDlg');
+  const TPL = [ { name:'주일예배 설교', dow:0, s:'11:00', e:'12:00' }, { name:'수요예배 설교', dow:3, s:'19:30', e:'20:30' }, { name:'토요새벽기도회 설교', dow:6, s:'05:30', e:'06:30' } ];
+  const nextDow = dow => { const d = new Date(); d.setDate(d.getDate() + ((dow - d.getDay() + 7) % 7)); return ymd(d); };
+  function openTpl(){
+    const wc = calendars.filter(writable);
+    if (!wc.length) return toast('일정을 추가할 수 있는 캘린더가 없습니다.');
+    const def = ls.get(K.defCal);
+    $('#tplCal').innerHTML = wc.map(c => `<option value="${esc(c.id)}">${esc(calName(c))}</option>`).join('');
+    $('#tplCal').value = wc.some(c => c.id === def) ? def : (wc.find(c => c.primary) || wc[0]).id;
+    $('#tplRows').innerHTML = TPL.map((t,i) => `<div class="tpl-row"><div class="nm"><input type="checkbox" data-on="${i}" ${i===0?'checked':''} aria-label="사용"><input type="text" data-n="${i}" value="${esc(t.name)}"></div><div class="two"><input type="time" data-s="${i}" value="${t.s}"><input type="time" data-e="${i}" value="${t.e}"></div></div>`).join('');
+    $('#tplUntil').value = '';
+    tplDlg.showModal();
+  }
+  $('#tplSave').onclick = async () => {
+    const picks = TPL.map((t,i) => ({ t, i, on: document.querySelector(`[data-on="${i}"]`).checked,
+      name: document.querySelector(`[data-n="${i}"]`).value.trim() || t.name,
+      s: document.querySelector(`[data-s="${i}"]`).value || t.s, e: document.querySelector(`[data-e="${i}"]`).value || t.e })).filter(x => x.on);
+    if (!picks.length) return toast('만들 예배를 하나 이상 선택해 주세요.');
+    const cal = $('#tplCal').value, until = $('#tplUntil').value;
+    if (!confirm(`${picks.map(x => x.name).join(', ')}\n위 일정을 매주 반복으로 만들까요?`)) return;
+    $('#tplSave').disabled = true;
+    try {
+      for (const x of picks){
+        const d = nextDow(x.t.dow), end = x.e > x.s ? x.e : '23:59';
+        const body = { summary: x.name, description: '', reminders: { useDefault:true }, ...timesBody(false, d, d, x.s, end),
+          recurrence: [rruleOf('WEEKLY', until, false)], extendedProperties: { private: { oh_sermon: '1' } } };
+        await api(evPath(cal), { method:'POST', body });
+      }
+      ls.set(K.defCal, cal);
+      tplDlg.close(); toast('정기 설교 일정을 만들었습니다.'); await loadEvents();
+    } catch(e){ toast('만들지 못했습니다: ' + e.message); }
+    finally { $('#tplSave').disabled = false; }
   };
 
   // ---------- 예전(기기 저장) 일정 옮기기 ----------
@@ -666,7 +837,7 @@
   $('#todayBtn').onclick = () => { cursor = new Date(); cursor.setDate(1); render(); loadEvents(); };
   $('#refresh').onclick = loadEvents;
   // 대화상자 바깥(어두운 배경)을 누르면 닫기
-  [editDlg, viewDlg].forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+  [editDlg, viewDlg, tplDlg].forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
   document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { view = b.dataset.view; ls.set(K.view, view); render(); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && token() && calendars.length) loadEvents(); });
 
