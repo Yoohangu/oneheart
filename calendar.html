@@ -572,7 +572,7 @@
   }
   function renderSermon(){
     const y = cursor.getFullYear(), m = cursor.getMonth(), pre = `${y}-${pad(m+1)}`;
-    const list = items.filter(e => e.sermon && e.sd.startsWith(pre)).sort((a,b) => a.sd.localeCompare(b.sd) || a.st.localeCompare(b.st));
+    const list = items.filter(e => e.sermon && e.sd.startsWith(pre)).sort((a,b) => b.sd.localeCompare(a.sd) || b.st.localeCompare(a.st));  // 최근 날짜가 위로
     let h = `<div class="pad"><div class="row" style="justify-content:space-between;margin-bottom:12px"><b>${m+1}월 설교 ${list.length}건</b><button class="btn" id="tplBtn">+ 정기 설교 일정 만들기</button></div>`;
     if (!list.length) h += '<div class="empty">이 달에 설교 일정이 없습니다.<br>‘+ 정기 설교 일정 만들기’로 주일·수요 예배를 한 번에 만들거나,<br>일정을 추가할 때 <b>📖 설교 일정</b>을 체크하세요.</div>';
     list.forEach(e => {
