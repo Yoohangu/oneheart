@@ -637,11 +637,16 @@
   };
   form.allDay.onchange = syncRows; form.scope.onchange = syncRows; form.isSermon.onchange = syncRows;
   form.date.onchange = () => { if (form.dateEnd.value < form.date.value) form.dateEnd.value = form.date.value; };
-  form.start.onchange = () => {
-    if (form.dateEnd.value === form.date.value && form.end.value <= form.start.value){
-      const [h,m] = form.start.value.split(':').map(Number); form.end.value = `${pad(Math.min(h+1,23))}:${h>=23?'59':pad(m)}`;
-    }
+  // 종료 시간을 직접 넣지 않았으면, 시작 시간을 넣을 때마다 1시간 뒤로 자동으로 맞춥니다
+  let endTouched = false;
+  const plusHour = t => { const [h,m] = t.split(':').map(Number); return h >= 23 ? '23:59' : `${pad(h+1)}:${pad(m)}`; };
+  const autoEnd = () => {
+    if (!form.start.value) return;
+    const sameDay = form.dateEnd.value === form.date.value;
+    if (!endTouched || !form.end.value || (sameDay && form.end.value <= form.start.value)) form.end.value = plusHour(form.start.value);
   };
+  form.start.oninput = form.start.onchange = autoEnd;
+  form.end.oninput = form.end.onchange = () => { endTouched = !!form.end.value; };
 
   function openEdit(e, date){
     const wc = calendars.filter(writable);
@@ -660,6 +665,7 @@
     form.allDay.checked = !!e?.allDay;
     form.start.value = e?.st || '10:00';
     form.end.value = e?.et || '11:00';
+    endTouched = !!e;  // 새 일정은 종료 시간이 시작 시간을 따라갑니다
     form.location.value = e?.location || '';
     form.memo.value = e?.memo || '';
     form.isSermon.checked = e ? !!e.sermon : view === 'sermon';
